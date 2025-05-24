@@ -1,0 +1,118 @@
+[
+  {
+    "id": "1748121594",
+    "timestamp": "2025-05-25T02:19:54.089031",
+    "date": "2025-05-25 02:19:54",
+    "user_description": "",
+    "uploaded_files": [
+      "577ae7cdaced43cd8c3037019caf1692_27fa8fea88b8.jpg"
+    ],
+    "diagnosis": {
+      "malfunction": "General vehicle issue - requires professional inspection",
+      "recommended_actions": [
+        "Take vehicle to a certified mechanic for diagnosis",
+        "Provide detailed information about symptoms",
+        "Note when the problem occurs (cold start, highway speeds, etc.)",
+        "Check for any warning lights on dashboard"
+      ],
+      "possible_causes": [
+        "Multiple potential issues based on symptoms",
+        "Could be electrical, mechanical, or fuel system related",
+        "Modern vehicles require computer diagnostics for precise troubleshooting"
+      ]
+    },
+    "feedback": true
+  },
+  {
+    "id": "1748121719",
+    "timestamp": "2025-05-25T02:21:59.948180",
+    "date": "2025-05-25 02:21:59",
+    "user_description": "При любом торможении слышится металлический скрежет и лёгкие удары в педали\r\n\r\nВибрация кузова и рулевого колеса при замедлении до 40–20 км/ч\r\n\r\nПедаль тормоза «проваливается» почти до пола, едва достигая тактильного подкрепления\r\n",
+    "uploaded_files": [],
+    "diagnosis": {
+      "malfunction": "Brake system issue - worn brake pads or rotors",
+      "recommended_actions": [
+        "Inspect brake pads and rotors for wear",
+        "Replace worn brake components",
+        "Check brake fluid level and condition",
+        "Test brake system after repair"
+      ],
+      "possible_causes": [
+        "Worn brake pads",
+        "Damaged brake rotors",
+        "Air in brake lines",
+        "Caliper issues"
+      ]
+    },
+    "feedback": null
+  },
+  {
+    "id": "1748122718",
+    "timestamp": "2025-05-25T02:38:38.951023",
+    "date": "2025-05-25 02:38:38",
+    "user_description": "При разгоне с 2 000 до 3 000 об/мин идёт густой чёрный дым из трубы (примерно 20 с подряд)\r\n\r\nПотеря мощности — ускорение «тупит», ручка оборотов плавает\r\n",
+    "uploaded_files": [],
+    "diagnosis": {
+      "malfunction": "General vehicle issue - requires professional inspection",
+      "recommended_actions": [
+        "Take vehicle to a certified mechanic for diagnosis",
+        "Provide detailed information about symptoms",
+        "Note when the problem occurs (cold start, highway speeds, etc.)",
+        "Check for any warning lights on dashboard"
+      ],
+      "possible_causes": [
+        "Multiple potential issues based on symptoms",
+        "Could be electrical, mechanical, or fuel system related",
+        "Modern vehicles require computer diagnostics for precise troubleshooting"
+      ]
+    },
+    "feedback": false,
+    "feedback_date": "2025-05-25T02:47:07.963580"
+  },
+  {
+    "id": "1748123232",
+    "timestamp": "2025-05-25T02:47:12.436782",
+    "date": "2025-05-25 02:47:12",
+    "user_description": "При разгоне с 2 000 до 3 000 об/мин идёт густой чёрный дым из трубы (примерно 20 с подряд)\r\n\r\nПотеря мощности — ускорение «тупит», ручка оборотов плавает\r\n",
+    "uploaded_files": [],
+    "diagnosis": {
+      "malfunction": "General vehicle issue - requires professional inspection",
+      "recommended_actions": [
+        "Take vehicle to a certified mechanic for diagnosis",
+        "Provide detailed information about symptoms",
+        "Note when the problem occurs (cold start, highway speeds, etc.)",
+        "Check for any warning lights on dashboard"
+      ],
+      "possible_causes": [
+        "Multiple potential issues based on symptoms",
+        "Could be electrical, mechanical, or fuel system related",
+        "Modern vehicles require computer diagnostics for precise troubleshooting"
+      ]
+    },
+    "feedback": null
+  },
+  {
+    "id": "1748123263",
+    "timestamp": "2025-05-25T02:47:43.192160",
+    "date": "2025-05-25 02:47:43",
+    "user_description": "проблема на фото",
+    "uploaded_files": [
+      "43e0fd4a3e274e6fa0790a013ad43612_27fa8fea88b8.jpg"
+    ],
+    "diagnosis": {
+      "malfunction": "General vehicle issue - requires professional inspection",
+      "recommended_actions": [
+        "Take vehicle to a certified mechanic for diagnosis",
+        "Provide detailed information about symptoms",
+        "Note when the problem occurs (cold start, highway speeds, etc.)",
+        "Check for any warning lights on dashboard"
+      ],
+      "possible_causes": [
+        "Multiple potential issues based on symptoms",
+        "Could be electrical, mechanical, or fuel system related",
+        "Modern vehicles require computer diagnostics for precise troubleshooting"
+      ]
+    },
+    "feedback": null
+  }
+]

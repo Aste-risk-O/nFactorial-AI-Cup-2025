@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics | Car Diagnostics Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            light: '#4F46E5',
+                            DEFAULT: '#4338CA',
+                            dark: '#3730A3',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200" 
+      x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', language: localStorage.getItem('language') || 'en' }"
+      :class="{ 'dark': darkMode }">
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-primary-DEFAULT dark:text-white">
+                <span x-show="language === 'en'">Car Diagnostics Assistant</span>
+                <span x-show="language === 'ru'">Автодиагност</span>
+            </h1>
+            <div class="flex items-center space-x-4">
+                <!-- Language Switcher -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
+                        <span x-show="language === 'en'">🇺🇸 English</span>
+                        <span x-show="language === 'ru'">🇷🇺 Русский</span>
+                        <svg class="ml-1 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10">
+                        <a href="#" @click.prevent="language = 'en'; localStorage.setItem('language', 'en'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">🇺🇸 English</a>
+                        <a href="#" @click.prevent="language = 'ru'; localStorage.setItem('language', 'ru'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">🇷🇺 Русский</a>
+                    </div>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg x-show="!darkMode" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                    <svg x-show="darkMode" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+
+                <!-- Navigation -->
+                <nav class="flex space-x-4">
+                    <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
+                        <span x-show="language === 'en'">Home</span>
+                        <span x-show="language === 'ru'">Главная</span>
+                    </a>
+                    <a href="/history" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
+                        <span x-show="language === 'en'">History</span>
+                        <span x-show="language === 'ru'">История</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                    <span x-show="language === 'en'">Feedback Statistics</span>
+                    <span x-show="language === 'ru'">Статистика обратной связи</span>
+                </h2>
+
+                <!-- Stats Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Total Diagnoses -->
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 shadow-sm">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-blue-500 bg-opacity-10">
+                                <svg class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-5">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    <span x-show="language === 'en'">Total Diagnoses</span>
+                                    <span x-show="language === 'ru'">Всего диагностик</span>
+                                </p>
+                                <p class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">{{ stats.total_records }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Rate -->
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 shadow-sm">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-green-500 bg-opacity-10">
+                                <svg class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-5">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    <span x-show="language === 'en'">Feedback Rate</span>
+                                    <span x-show="language === 'ru'">Процент отзывов</span>
+                                </p>
+                                <p class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">{{ "%.1f"|format(stats.feedback_rate) }}%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Satisfaction Rate -->
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 shadow-sm">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-full bg-purple-500 bg-opacity-10">
+                                <svg class="h-8 w-8 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-5">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    <span x-show="language === 'en'">Satisfaction Rate</span>
+                                    <span x-show="language === 'ru'">Уровень удовлетворенности</span>
+                                </p>
+                                <p class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white" data-stat-satisfaction-rate>{{ "%.1f"|format(stats.satisfaction_rate) }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Feedback Distribution Chart -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            <span x-show="language === 'en'">Feedback Distribution</span>
+                            <span x-show="language === 'ru'">Распределение отзывов</span>
+                        </h3>
+                        <div class="h-64">
+                            <canvas id="feedbackChart" data-positive="{{ stats.positive_feedback }}" data-negative="{{ stats.negative_feedback }}"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Status Chart -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            <span x-show="language === 'en'">Feedback Status</span>
+                            <span x-show="language === 'ru'">Статус отзывов</span>
+                        </h3>
+                        <div class="h-64">
+                            <canvas id="statusChart" data-with-feedback="{{ stats.with_feedback }}" data-without-feedback="{{ stats.total_records - stats.with_feedback }}"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 shadow mt-8">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-gray-500 dark:text-gray-400 text-sm">
+                <span x-show="language === 'en'">© 2025 Car Diagnostics Assistant. All rights reserved.</span>
+                <span x-show="language === 'ru'">© 2025 Автодиагност. Все права защищены.</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the current language
+            const language = localStorage.getItem('language') || 'en';
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            
+            // Set up chart colors based on theme
+            const textColor = isDarkMode ? '#D1D5DB' : '#374151';
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            
+            // Chart.js global defaults
+            Chart.defaults.color = textColor;
+            Chart.defaults.borderColor = gridColor;
+            
+            // Get data from data attributes
+            const feedbackCanvas = document.getElementById('feedbackChart');
+            const positiveCount = parseInt(feedbackCanvas.dataset.positive || 0);
+            const negativeCount = parseInt(feedbackCanvas.dataset.negative || 0);
+            
+            const statusCanvas = document.getElementById('statusChart');
+            const withFeedbackCount = parseInt(statusCanvas.dataset.withFeedback || 0);
+            const withoutFeedbackCount = parseInt(statusCanvas.dataset.withoutFeedback || 0);
+            
+            // Feedback Distribution Chart
+            const feedbackCtx = feedbackCanvas.getContext('2d');
+            const feedbackChart = new Chart(feedbackCtx, {
+                type: 'pie',
+                data: {
+                    labels: [
+                        language === 'en' ? 'Positive' : 'Положительные',
+                        language === 'en' ? 'Negative' : 'Отрицательные'
+                    ],
+                    datasets: [{
+                        data: [positiveCount, negativeCount],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(34, 197, 94, 1)',
+                            'rgba(239, 68, 68, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Feedback Status Chart
+            const statusCtx = statusCanvas.getContext('2d');
+            const statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        language === 'en' ? 'With Feedback' : 'С отзывом',
+                        language === 'en' ? 'Without Feedback' : 'Без отзыва'
+                    ],
+                    datasets: [{
+                        data: [withFeedbackCount, withoutFeedbackCount],
+                        backgroundColor: [
+                            'rgba(79, 70, 229, 0.8)',
+                            'rgba(156, 163, 175, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(79, 70, 229, 1)',
+                            'rgba(156, 163, 175, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Update charts when theme changes
+            document.addEventListener('themeChanged', function() {
+                const isDarkMode = localStorage.getItem('darkMode') === 'true';
+                const textColor = isDarkMode ? '#D1D5DB' : '#374151';
+                const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+                
+                Chart.defaults.color = textColor;
+                Chart.defaults.borderColor = gridColor;
+                
+                feedbackChart.update();
+                statusChart.update();
+            });
+        });
+        
+        // Initialize theme from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.documentElement.classList.add('dark');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Diagnostics Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            light: '#4F46E5',
+                            DEFAULT: '#4338CA',
+                            dark: '#3730A3',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 0.5rem;
+            transition: border-color 0.3s ease;
+        }
+        .drop-zone--over {
+            border-color: #4338CA;
+        }
+        .dark .drop-zone {
+            border-color: #4B5563;
+        }
+        .dark .drop-zone--over {
+            border-color: #6366F1;
+        }
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200" 
+      x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', language: localStorage.getItem('language') || 'en' }"
+      :class="{ 'dark': darkMode }">
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-primary-DEFAULT dark:text-white">
+                <span x-show="language === 'en'">Car Diagnostics Assistant</span>
+                <span x-show="language === 'ru'">Автодиагност</span>
+            </h1>
+            <div class="flex items-center space-x-4">
+                <!-- Language Switcher -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
+                        <span x-show="language === 'en'">🇺🇸 English</span>
+                        <span x-show="language === 'ru'">🇷🇺 Русский</span>
+                        <svg class="ml-1 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10">
+                        <a href="#" @click.prevent="language = 'en'; localStorage.setItem('language', 'en'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">🇺🇸 English</a>
+                        <a href="#" @click.prevent="language = 'ru'; localStorage.setItem('language', 'ru'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">🇷🇺 Русский</a>
+                    </div>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg x-show="!darkMode" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                    <svg x-show="darkMode" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+
+                <!-- Navigation -->
+                <nav class="flex space-x-4">
+                    <a href="/history" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
+                        <span x-show="language === 'en'">History</span>
+                        <span x-show="language === 'ru'">История</span>
+                    </a>
+                    <a href="/stats" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
+                        <span x-show="language === 'en'">Statistics</span>
+                        <span x-show="language === 'ru'">Статистика</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                    <span x-show="language === 'en'">Diagnose Your Car Issue</span>
+                    <span x-show="language === 'ru'">Диагностика проблем автомобиля</span>
+                </h2>
+
+                <!-- Form -->
+                <form id="diagnosticForm" action="/" method="post" enctype="multipart/form-data" class="space-y-6">
+                    <!-- Description Field -->
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span x-show="language === 'en'">Describe the problem</span>
+                            <span x-show="language === 'ru'">Опишите проблему</span>
+                        </label>
+                        <textarea id="description" name="description" rows="4" 
+                                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-DEFAULT focus:ring-primary-DEFAULT dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                  placeholder="" x-bind:placeholder="language === 'en' ? 'E.g., My car makes a squealing noise when braking...' : 'Например, мой автомобиль издает визг при торможении...'"></textarea>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            <span x-show="language === 'en'">Upload photos or audio</span>
+                            <span x-show="language === 'ru'">Загрузите фото или аудио</span>
+                        </label>
+                        <div id="drop-zone" class="drop-zone flex flex-col items-center justify-center p-8 cursor-pointer">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="mt-4 text-center">
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    <span x-show="language === 'en'">Drag and drop files here, or click to select files</span>
+                                    <span x-show="language === 'ru'">Перетащите файлы сюда или нажмите для выбора</span>
+                                </p>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
+                                    <span x-show="language === 'en'">Supported formats: {{ allowed_image_extensions }} for images, {{ allowed_audio_extensions }} for audio</span>
+                                    <span x-show="language === 'ru'">Поддерживаемые форматы: {{ allowed_image_extensions }} для изображений, {{ allowed_audio_extensions }} для аудио</span>
+                                </p>
+                            </div>
+                            <input type="file" id="fileInput" name="files" multiple class="hidden" accept=".jpg,.jpeg,.png,.mp3,.wav">
+                        </div>
+                        <div id="filePreview" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div>
+                        <button type="submit" class="w-full inline-flex justify-center py-3 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-DEFAULT hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light">
+                            <span x-show="language === 'en'">Diagnose</span>
+                            <span x-show="language === 'ru'">Диагностировать</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Error Message -->
+                {% if error_message %}
+                <div class="mt-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-red-800 dark:text-red-200">{{ error_message }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Results -->
+                {% if diagnosis_result %}
+                <div id="results" class="mt-8 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                    <div class="bg-gray-50 dark:bg-gray-900 px-4 py-5 sm:px-6">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">
+                            <span x-show="language === 'en'">Diagnosis Results</span>
+                            <span x-show="language === 'ru'">Результаты диагностики</span>
+                        </h3>
+                        {% if diagnosis_result.transcription %}
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span x-show="language === 'en'">Audio transcription: "{{ diagnosis_result.transcription }}"</span>
+                            <span x-show="language === 'ru'">Транскрипция аудио: "{{ diagnosis_result.transcription }}"</span>
+                        </p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:px-6">
+                        <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                            <div class="sm:col-span-2">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    <span x-show="language === 'en'">Malfunction</span>
+                                    <span x-show="language === 'ru'">Неисправность</span>
+                                </dt>
+                                <dd class="mt-1 text-md text-gray-900 dark:text-white">{{ diagnosis_result.diagnosis.malfunction }}</dd>
+                            </div>
+                            
+                            <div class="sm:col-span-2">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    <span x-show="language === 'en'">Recommended Actions</span>
+                                    <span x-show="language === 'ru'">Рекомендуемые действия</span>
+                                </dt>
+                                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        {% for action in diagnosis_result.diagnosis.recommended_actions %}
+                                        <li>{{ action }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </dd>
+                            </div>
+                            
+                            <div class="sm:col-span-2">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    <span x-show="language === 'en'">Possible Causes</span>
+                                    <span x-show="language === 'ru'">Возможные причины</span>
+                                </dt>
+                                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        {% for cause in diagnosis_result.diagnosis.possible_causes %}
+                                        <li>{{ cause }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                    
+                    <!-- Feedback buttons -->
+                    <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-4 sm:px-6 flex justify-center space-x-4">
+                        <span class="text-sm text-gray-500 dark:text-gray-400 mr-2">
+                            <span x-show="language === 'en'">Was this helpful?</span>
+                            <span x-show="language === 'ru'">Это помогло?</span>
+                        </span>
+                        <button type="button" onclick="provideFeedback('{{ diagnosis_result.record_id }}', true)" 
+                                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <span x-show="language === 'en'">Yes</span>
+                            <span x-show="language === 'ru'">Да</span>
+                        </button>
+                        <button type="button" onclick="provideFeedback('{{ diagnosis_result.record_id }}', false)" 
+                                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <span x-show="language === 'en'">No</span>
+                            <span x-show="language === 'ru'">Нет</span>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 shadow mt-8">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-gray-500 dark:text-gray-400 text-sm">
+                <span x-show="language === 'en'">© 2025 Car Diagnostics Assistant. All rights reserved.</span>
+                <span x-show="language === 'ru'">© 2025 Автодиагност. Все права защищены.</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // File upload preview functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('fileInput');
+            const filePreview = document.getElementById('filePreview');
+
+            // Handle drag and drop events
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.add('drop-zone--over');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.classList.remove('drop-zone--over');
+                });
+            });
+
+            dropZone.addEventListener('drop', handleDrop);
+            dropZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFiles);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+                handleFiles();
+            }
+
+            function handleFiles() {
+                const files = fileInput.files;
+                filePreview.innerHTML = '';
+
+                if (files.length === 0) return;
+
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    const fileType = file.type.split('/')[0];
+                    const fileDiv = document.createElement('div');
+                    fileDiv.className = 'relative border border-gray-200 dark:border-gray-700 rounded-lg p-2';
+
+                    if (fileType === 'image') {
+                        reader.onload = e => {
+                            fileDiv.innerHTML = `
+                                <img src="${e.target.result}" alt="${file.name}" class="w-full h-32 object-cover rounded">
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">${file.name}</p>
+                            `;
+                        };
+                        reader.readAsDataURL(file);
+                    } else if (fileType === 'audio') {
+                        fileDiv.innerHTML = `
+                            <div class="w-full h-32 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded">
+                                <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">${file.name}</p>
+                        `;
+                    } else {
+                        fileDiv.innerHTML = `
+                            <div class="w-full h-32 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded">
+                                <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 truncate">${file.name}</p>
+                        `;
+                    }
+
+                    filePreview.appendChild(fileDiv);
+                });
+            }
+        });
+
+        // Handle feedback
+        function provideFeedback(recordId, helpful) {
+            fetch(`/api/feedback/${recordId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ helpful: helpful })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(helpful ? 'Thank you for your positive feedback!' : 'Thank you for your feedback. We will improve.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Initialize theme from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.documentElement.classList.add('dark');
+            }
+        });
+    </script>
+</body>
+</html>
