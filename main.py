@@ -14,14 +14,37 @@ app = Flask(__name__)
 
 # Configuration
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
-app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 
-# Создаем директории, если они не существуют
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# Проверяем, есть ли переменная окружения для загрузок в облачной среде
+cloud_storage = os.environ.get('CLOUD_STORAGE', None)
 
-# Создаем поддиректории для разных типов файлов
-os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'images'), exist_ok=True)
-os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'audio'), exist_ok=True)
+# Если мы в облачной среде и есть специальная директория, используем её
+if cloud_storage and os.path.exists(cloud_storage):
+    print(f"Using cloud storage path: {cloud_storage}")
+    app.config['UPLOAD_FOLDER'] = cloud_storage
+else:
+    # Используем локальную директорию
+    app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+    print(f"Using local storage path: {app.config['UPLOAD_FOLDER']}")
+
+# Если директория не существует, создаем её
+try:
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    # Создаем поддиректории для разных типов файлов
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'images'), exist_ok=True)
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'audio'), exist_ok=True)
+    print("Upload directories created successfully")
+except Exception as e:
+    print(f"Warning: Could not create upload directories: {str(e)}")
+    # Для облачных сред с ограниченными правами используем временную директорию
+    import tempfile
+    app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
+    print(f"Fallback to temp directory: {app.config['UPLOAD_FOLDER']}")
+
+# Настраиваем файловые ограничения
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'mp3', 'wav'}
+app.config['UPLOAD_TIMEOUT'] = 30  # Таймаут загрузки в секундах
 
 # Initialize LLM client
 llm_client = LLMClient()
@@ -61,7 +84,9 @@ def index():
                 )
                 
                 # Save to history
-                uploaded_filenames = [os.path.basename(f) for f in image_files + audio_files]
+                # Извлекаем имена файлов из путей к изображениям и аудио
+                image_paths = [item['path'] for item in image_descriptions] if image_descriptions else []
+                uploaded_filenames = [os.path.basename(f) for f in image_paths + audio_files]
                 record = add_record(description, diagnosis, uploaded_filenames)
                 
                 diagnosis_result = {
