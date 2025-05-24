@@ -31,29 +31,8 @@ The Car Diagnostics Assistant is an intelligent web application that helps users
 
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd nFactorial-AI-Cup-2025-1
-```
+https://dayio.onrender.com
 
-2. Install the required dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. Set up your environment variables:
-   - Edit the `.env` file and add your Groq API key:
-   ```
-   GROQ_API_KEY=your_groq_api_key_here
-   ```
-
-4. Run the application:
-```bash
-python main.py
-```
-
-5. Open your browser and navigate to `http://127.0.0.1:5000`
 
 ## Project Structure
 - `main.py`: Main Flask application
