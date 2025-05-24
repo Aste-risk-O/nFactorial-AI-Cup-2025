@@ -6,75 +6,153 @@
     <title>Diagnostic History | Car Diagnostics Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Подключаем Google Fonts для лучшей типографики -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Montserrat', 'sans-serif'],
+                    },
                     colors: {
                         primary: {
-                            light: '#4F46E5',
-                            DEFAULT: '#4338CA',
-                            dark: '#3730A3',
+                            light: '#6366F1', // Indigo-500
+                            DEFAULT: '#4F46E5', // Indigo-600
+                            dark: '#4338CA', // Indigo-700
                         },
+                        secondary: {
+                            light: '#FB7185', // Rose-400
+                            DEFAULT: '#E11D48', // Rose-600
+                            dark: '#BE123C', // Rose-700
+                        },
+                        dark: {
+                            lighter: '#374151', // Gray-700
+                            light: '#1F2937', // Gray-800
+                            DEFAULT: '#111827', // Gray-900
+                            deep: '#030712', // Gray-950
+                        }
+                    },
+                    boxShadow: {
+                        soft: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'gradient-subtle': 'linear-gradient(to right, var(--tw-gradient-stops))',
                     }
                 }
             }
         }
     </script>
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
         [x-cloak] {
             display: none !important;
+        }
+        /* Улучшенный скроллбар для темного режима */
+        .dark ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #1F2937;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #4B5563;
+            border-radius: 5px;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #6B7280;
+        }
+        /* Эффект градиента для темного фона */
+        .dark-gradient {
+            background: linear-gradient(to bottom right, #111827, #1E293B);
+        }
+        /* Эффект свечения для темного режима */
+        .dark .glow-effect {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        }
+        /* Стилизация таблицы */
+        .history-table th {
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        .history-table tbody tr {
+            transition: all 0.2s ease;
+        }
+        .history-table tbody tr:hover {
+            transform: translateY(-2px);
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200" 
+<body class="bg-gray-50 dark:bg-dark-deep dark:bg-gradient-to-br from-dark-deep to-dark-light transition-colors duration-200" 
       x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', language: localStorage.getItem('language') || 'en' }"
       :class="{ 'dark': darkMode }">
 
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-primary-DEFAULT dark:text-white">
-                <span x-show="language === 'en'">Car Diagnostics Assistant</span>
-                <span x-show="language === 'ru'">Автодиагност</span>
+    <header class="bg-white dark:bg-dark-light dark:border-dark-lighter border-b dark:border-opacity-20 shadow-sm dark:shadow-md dark:shadow-black/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-light to-primary-dark dark:from-primary-light dark:to-indigo-400">
+                <span x-show="language === 'en'" class="flex items-center">
+                    <i class="fas fa-car-mechanic mr-2 text-primary-DEFAULT dark:text-primary-light"></i> Car Diagnostics Assistant
+                </span>
+                <span x-show="language === 'ru'" class="flex items-center">
+                    <i class="fas fa-car-mechanic mr-2 text-primary-DEFAULT dark:text-primary-light"></i> Автодиагност
+                </span>
             </h1>
             <div class="flex items-center space-x-4">
                 <!-- Language Switcher -->
                 <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
-                        <span x-show="language === 'en'">🇺🇸 English</span>
-                        <span x-show="language === 'ru'">🇷🇺 Русский</span>
+                    <button @click="open = !open" class="flex items-center px-3 py-2 rounded-md bg-gray-100 dark:bg-dark-lighter dark:hover:bg-dark-light text-gray-700 dark:text-gray-200 hover:bg-gray-200 transition-colors duration-200">
+                        <span x-show="language === 'en'" class="flex items-center">🇺🇸 <span class="ml-1.5 font-medium">EN</span></span>
+                        <span x-show="language === 'ru'" class="flex items-center">🇷🇺 <span class="ml-1.5 font-medium">RU</span></span>
                         <svg class="ml-1 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                         </svg>
                     </button>
-                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10">
-                        <a href="#" @click.prevent="language = 'en'; localStorage.setItem('language', 'en'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">🇺🇸 English</a>
-                        <a href="#" @click.prevent="language = 'ru'; localStorage.setItem('language', 'ru'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">🇷🇺 Русский</a>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-light rounded-lg shadow-lg py-2 z-10 border dark:border-dark-lighter">
+                        <a href="#" @click.prevent="language = 'en'; localStorage.setItem('language', 'en'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-lighter">🇺🇸 English</a>
+                        <a href="#" @click.prevent="language = 'ru'; localStorage.setItem('language', 'ru'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-lighter">🇷🇺 Русский</a>
                     </div>
                 </div>
 
                 <!-- Theme Toggle -->
-                <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <svg x-show="!darkMode" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="p-2 rounded-full bg-gray-100 dark:bg-dark-lighter hover:bg-gray-200 dark:hover:bg-dark-light transition-colors duration-200">
+                    <svg x-show="!darkMode" class="h-5 w-5 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
                     </svg>
-                    <svg x-show="darkMode" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg x-show="darkMode" class="h-5 w-5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
                     </svg>
                 </button>
 
                 <!-- Navigation -->
-                <nav class="flex space-x-4">
-                    <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
-                        <span x-show="language === 'en'">Home</span>
-                        <span x-show="language === 'ru'">Главная</span>
+                <nav class="flex space-x-2">
+                    <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-lighter hover:text-primary-DEFAULT dark:hover:text-primary-light transition-colors duration-200">
+                        <span x-show="language === 'en'" class="flex items-center">
+                            <i class="fas fa-home mr-1.5"></i> Home
+                        </span>
+                        <span x-show="language === 'ru'" class="flex items-center">
+                            <i class="fas fa-home mr-1.5"></i> Главная
+                        </span>
                     </a>
-                    <a href="/stats" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
-                        <span x-show="language === 'en'">Statistics</span>
-                        <span x-show="language === 'ru'">Статистика</span>
+                    <a href="/stats" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-lighter hover:text-primary-DEFAULT dark:hover:text-primary-light transition-colors duration-200">
+                        <span x-show="language === 'en'" class="flex items-center">
+                            <i class="fas fa-chart-bar mr-1.5"></i> Statistics
+                        </span>
+                        <span x-show="language === 'ru'" class="flex items-center">
+                            <i class="fas fa-chart-bar mr-1.5"></i> Статистика
+                        </span>
                     </a>
                 </nav>
             </div>
@@ -83,46 +161,37 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+        <div class="bg-white dark:bg-dark-light shadow-soft dark:shadow-md dark:shadow-black/30 overflow-hidden rounded-xl border border-gray-100 dark:border-dark-lighter dark:border-opacity-20">
             <div class="p-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0">
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
+                    <h2 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-dark to-primary-light dark:from-primary-light dark:to-indigo-400 flex items-center">
+                        <i class="fas fa-history mr-3 text-primary-DEFAULT dark:text-primary-light"></i>
                         <span x-show="language === 'en'">Diagnostic History</span>
                         <span x-show="language === 'ru'">История диагностики</span>
                     </h2>
-                    
-                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
-                        <!-- Search Form -->
-                        <form action="/history" method="get" class="flex-1 flex">
-                            <input type="text" name="query" value="{{ search_query }}" placeholder="" 
-                                   x-bind:placeholder="language === 'en' ? 'Search history...' : 'Поиск в истории...'" 
-                                   class="flex-1 rounded-l-md border-gray-300 shadow-sm focus:border-primary-DEFAULT focus:ring-primary-DEFAULT dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md shadow-sm text-white bg-primary-DEFAULT hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </form>
-                        
-                        <div class="flex space-x-2">
-                            <!-- Export History Button -->
-                            <a href="/api/export_history" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                <i class="fas fa-download mr-2"></i>
-                                <span x-show="language === 'en'">Export</span>
-                                <span x-show="language === 'ru'">Экспорт</span>
-                            </a>
+                    <div class="flex space-x-3">
+                        <button @click="confirmClearHistory()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-gradient-to-br from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-dark-light">
+                            <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            <span x-show="language === 'en'">Clear All</span>
+                            <span x-show="language === 'ru'">Очистить все</span>
+                        </button>
+                        <button @click="openImportModal()" class="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-gradient-to-br from-primary-light to-primary-dark hover:from-primary-DEFAULT hover:to-primary-dark shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light dark:focus:ring-offset-dark-light">
+                            <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                            </svg>
+                            <span x-show="language === 'en'">Import</span>
+                            <span x-show="language === 'ru'">Импорт</span>
+                        </button>
+                        <a href="/export" class="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-gradient-to-br from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-dark-light">
+                            <svg class="-ml-0.5 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <span x-show="language === 'en'">Export</span>
+                            <span x-show="language === 'ru'">Экспорт</span>
+                        </a>
                             
-                            <!-- Import History Button -->
-                            <button onclick="openImportModal()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                <i class="fas fa-upload mr-2"></i>
-                                <span x-show="language === 'en'">Import</span>
-                                <span x-show="language === 'ru'">Импорт</span>
-                            </button>
-                            
-                            <!-- Clear History Button -->
-                            <button onclick="confirmClearHistory()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                <i class="fas fa-trash-alt mr-2"></i>
-                                <span x-show="language === 'en'">Clear</span>
-                                <span x-show="language === 'ru'">Очистить</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -130,59 +199,71 @@
                 <!-- History Records -->
                 {% if records %}
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-900">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 history-table">
+                        <thead class="bg-gray-50 dark:bg-dark-light bg-opacity-70">
                             <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    <span x-show="language === 'en'">Date</span>
-                                    <span x-show="language === 'ru'">Дата</span>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                    <span x-show="language === 'en'" class="flex items-center"><i class="fas fa-calendar-alt mr-2"></i> Date</span>
+                                    <span x-show="language === 'ru'" class="flex items-center"><i class="fas fa-calendar-alt mr-2"></i> Дата</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    <span x-show="language === 'en'">Description</span>
-                                    <span x-show="language === 'ru'">Описание</span>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                    <span x-show="language === 'en'" class="flex items-center"><i class="fas fa-comment-alt mr-2"></i> Description</span>
+                                    <span x-show="language === 'ru'" class="flex items-center"><i class="fas fa-comment-alt mr-2"></i> Описание</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    <span x-show="language === 'en'">Diagnosis</span>
-                                    <span x-show="language === 'ru'">Диагноз</span>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                    <span x-show="language === 'en'" class="flex items-center"><i class="fas fa-stethoscope mr-2"></i> Diagnosis</span>
+                                    <span x-show="language === 'ru'" class="flex items-center"><i class="fas fa-stethoscope mr-2"></i> Диагноз</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    <span x-show="language === 'en'">Files</span>
-                                    <span x-show="language === 'ru'">Файлы</span>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                    <span x-show="language === 'en'" class="flex items-center"><i class="fas fa-file-alt mr-2"></i> Files</span>
+                                    <span x-show="language === 'ru'" class="flex items-center"><i class="fas fa-file-alt mr-2"></i> Файлы</span>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    <span x-show="language === 'en'">Actions</span>
-                                    <span x-show="language === 'ru'">Действия</span>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                    <span x-show="language === 'en'" class="flex items-center"><i class="fas fa-cogs mr-2"></i> Actions</span>
+                                    <span x-show="language === 'ru'" class="flex items-center"><i class="fas fa-cogs mr-2"></i> Действия</span>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="bg-white dark:bg-dark-light divide-y divide-gray-200 dark:divide-gray-700">
                             {% for record in records %}
-                            <tr x-data="{ open: false }" :class="{'bg-gray-50 dark:bg-gray-900': open}" class="hover:bg-gray-50 dark:hover:bg-gray-900">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {{ record.date }}
+                            <tr x-data="{ open: false }" :class="{'bg-gray-100 dark:bg-dark-lighter': open}" class="hover:bg-gray-50 dark:hover:bg-dark-lighter transition-colors duration-150">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-clock text-primary-DEFAULT dark:text-primary-light mr-2 opacity-70"></i>
+                                        {{ record.date }}
+                                    </span>
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
+                                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">
                                     {{ record.user_description }}
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                                    {{ record.diagnosis.malfunction }}
+                                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                                        <i class="fas fa-car-mechanic mr-1.5"></i>
+                                        {{ record.diagnosis.malfunction }}
+                                    </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {{ record.uploaded_files|length }}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                        <i class="fas fa-file mr-1.5"></i>
+                                        {{ record.uploaded_files|length }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button @click="open = !open" class="text-primary-DEFAULT hover:text-primary-light">
-                                            <span x-show="!open">
+                                    <div class="flex space-x-3">
+                                        <button @click="open = !open" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded bg-primary-light bg-opacity-10 text-primary-DEFAULT dark:bg-primary-dark dark:bg-opacity-20 dark:text-primary-light hover:bg-opacity-20 dark:hover:bg-opacity-30 transition-colors duration-200">
+                                            <span x-show="!open" class="flex items-center">
+                                                <i class="fas fa-chevron-down mr-1.5"></i>
                                                 <span x-show="language === 'en'">Details</span>
                                                 <span x-show="language === 'ru'">Детали</span>
                                             </span>
-                                            <span x-show="open">
+                                            <span x-show="open" class="flex items-center">
+                                                <i class="fas fa-chevron-up mr-1.5"></i>
                                                 <span x-show="language === 'en'">Hide</span>
                                                 <span x-show="language === 'ru'">Скрыть</span>
                                             </span>
                                         </button>
-                                        <button onclick="confirmDeleteRecord('{{ record.id }}')" class="text-red-600 hover:text-red-900">
+                                        <button onclick="confirmDeleteRecord('{{ record.id }}')" class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded bg-red-100 text-red-700 dark:bg-red-900 dark:bg-opacity-30 dark:text-red-400 hover:bg-red-200 dark:hover:bg-opacity-40 transition-colors duration-200">
+                                            <i class="fas fa-trash-alt mr-1.5"></i>
                                             <span x-show="language === 'en'">Delete</span>
                                             <span x-show="language === 'ru'">Удалить</span>
                                         </button>
@@ -191,71 +272,107 @@
                             </tr>
                             <!-- Expanded details -->
                             <tr x-show="open" x-cloak>
-                                <td colspan="5" class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-inner border border-gray-200 dark:border-gray-700">
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div>
-                                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">
+                                <td colspan="5" class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                    <div class="bg-gray-50 dark:bg-dark-lighter p-6 rounded-xl shadow-md border border-gray-200 dark:border-dark-light dark:border-opacity-30 transition-all duration-200">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="bg-white dark:bg-dark-light p-5 rounded-lg shadow-sm border border-gray-100 dark:border-dark-light dark:border-opacity-20">
+                                                <h4 class="font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-primary-DEFAULT to-primary-light dark:from-primary-light dark:to-indigo-400 mb-3 flex items-center">
+                                                    <i class="fas fa-wrench mr-2 text-primary-DEFAULT dark:text-primary-light"></i>
                                                     <span x-show="language === 'en'">Recommended Actions</span>
                                                     <span x-show="language === 'ru'">Рекомендуемые действия</span>
                                                 </h4>
-                                                <ul class="list-disc pl-5 space-y-1">
+                                                <ul class="space-y-2">
                                                     {% for action in record.diagnosis.recommended_actions %}
-                                                    <li>{{ action }}</li>
+                                                    <li class="flex items-start">
+                                                        <span class="text-green-500 dark:text-green-400 mr-2 mt-0.5"><i class="fas fa-check-circle"></i></span>
+                                                        <span class="text-gray-700 dark:text-gray-300">{{ action }}</span>
+                                                    </li>
                                                     {% endfor %}
                                                 </ul>
                                             </div>
-                                            <div>
-                                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">
+                                            <div class="bg-white dark:bg-dark-light p-5 rounded-lg shadow-sm border border-gray-100 dark:border-dark-light dark:border-opacity-20">
+                                                <h4 class="font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-primary-DEFAULT to-primary-light dark:from-primary-light dark:to-indigo-400 mb-3 flex items-center">
+                                                    <i class="fas fa-search mr-2 text-primary-DEFAULT dark:text-primary-light"></i>
                                                     <span x-show="language === 'en'">Possible Causes</span>
                                                     <span x-show="language === 'ru'">Возможные причины</span>
                                                 </h4>
-                                                <ul class="list-disc pl-5 space-y-1">
+                                                <ul class="space-y-2">
                                                     {% for cause in record.diagnosis.possible_causes %}
-                                                    <li>{{ cause }}</li>
+                                                    <li class="flex items-start">
+                                                        <span class="text-amber-500 dark:text-amber-400 mr-2 mt-0.5"><i class="fas fa-exclamation-circle"></i></span>
+                                                        <span class="text-gray-700 dark:text-gray-300">{{ cause }}</span>
+                                                    </li>
                                                     {% endfor %}
                                                 </ul>
                                             </div>
                                             {% if record.uploaded_files %}
-                                            <div class="md:col-span-2">
-                                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">
+                                            <div class="md:col-span-2 bg-white dark:bg-dark-light p-5 rounded-lg shadow-sm border border-gray-100 dark:border-dark-light dark:border-opacity-20">
+                                                <h4 class="font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-primary-DEFAULT to-primary-light dark:from-primary-light dark:to-indigo-400 mb-3 flex items-center">
+                                                    <i class="fas fa-file-upload mr-2 text-primary-DEFAULT dark:text-primary-light"></i>
                                                     <span x-show="language === 'en'">Uploaded Files</span>
                                                     <span x-show="language === 'ru'">Загруженные файлы</span>
                                                 </h4>
-                                                <div class="flex flex-wrap gap-2">
+                                                <div class="flex flex-wrap gap-3">
                                                     {% for file in record.uploaded_files %}
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                    <div class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium bg-gray-50 dark:bg-dark-light border border-gray-200 dark:border-dark-lighter shadow-sm hover:shadow-md hover:bg-gray-100 dark:hover:bg-dark-darker transition-all duration-200">
                                                         {% if '.jpg' in file or '.jpeg' in file or '.png' in file %}
-                                                        <i class="fas fa-image mr-1"></i>
+                                                        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 mr-2">
+                                                            <i class="fas fa-image"></i>
+                                                        </span>
                                                         {% elif '.mp3' in file or '.wav' in file %}
-                                                        <i class="fas fa-music mr-1"></i>
+                                                        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 mr-2">
+                                                            <i class="fas fa-music"></i>
+                                                        </span>
                                                         {% else %}
-                                                        <i class="fas fa-file mr-1"></i>
+                                                        <span class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 mr-2">
+                                                            <i class="fas fa-file"></i>
+                                                        </span>
                                                         {% endif %}
-                                                        {{ file }}
-                                                    </span>
+                                                        <span class="text-gray-700 dark:text-gray-300">{{ file }}</span>
+                                                    </div>
                                                     {% endfor %}
                                                 </div>
                                             </div>
                                             {% endif %}
                                             {% if record.feedback is not none %}
-                                            <div class="md:col-span-2">
-                                                <h4 class="font-medium text-gray-900 dark:text-white mb-2">
+                                            <div class="md:col-span-2 bg-white dark:bg-dark-light p-5 rounded-lg shadow-sm border border-gray-100 dark:border-dark-light dark:border-opacity-20 mt-2">
+                                                <h4 class="font-semibold text-lg text-transparent bg-clip-text bg-gradient-to-r from-primary-DEFAULT to-primary-light dark:from-primary-light dark:to-indigo-400 mb-3 flex items-center">
+                                                    <i class="fas fa-comment mr-2 text-primary-DEFAULT dark:text-primary-light"></i>
                                                     <span x-show="language === 'en'">Feedback</span>
                                                     <span x-show="language === 'ru'">Отзыв</span>
                                                 </h4>
                                                 {% if record.feedback %}
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                                    <i class="fas fa-thumbs-up mr-1"></i>
-                                                    <span x-show="language === 'en'">Helpful</span>
-                                                    <span x-show="language === 'ru'">Полезно</span>
-                                                </span>
+                                                <div class="flex items-center bg-green-50 dark:bg-green-900 dark:bg-opacity-30 p-4 rounded-lg border border-green-200 dark:border-green-900 dark:border-opacity-50">
+                                                    <span class="flex items-center justify-center w-10 h-10 rounded-full bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 mr-3">
+                                                        <i class="fas fa-thumbs-up"></i>
+                                                    </span>
+                                                    <div>
+                                                        <h5 class="font-medium text-green-800 dark:text-green-300">
+                                                            <span x-show="language === 'en'">Helpful Diagnosis</span>
+                                                            <span x-show="language === 'ru'">Полезная диагностика</span>
+                                                        </h5>
+                                                        <p class="text-sm text-green-700 dark:text-green-400">
+                                                            <span x-show="language === 'en'">The user found this diagnosis helpful.</span>
+                                                            <span x-show="language === 'ru'">Пользователь нашел эту диагностику полезной.</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
                                                 {% else %}
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                                                    <i class="fas fa-thumbs-down mr-1"></i>
-                                                    <span x-show="language === 'en'">Not Helpful</span>
-                                                    <span x-show="language === 'ru'">Не полезно</span>
-                                                </span>
+                                                <div class="flex items-center bg-red-50 dark:bg-red-900 dark:bg-opacity-30 p-4 rounded-lg border border-red-200 dark:border-red-900 dark:border-opacity-50">
+                                                    <span class="flex items-center justify-center w-10 h-10 rounded-full bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-300 mr-3">
+                                                        <i class="fas fa-thumbs-down"></i>
+                                                    </span>
+                                                    <div>
+                                                        <h5 class="font-medium text-red-800 dark:text-red-300">
+                                                            <span x-show="language === 'en'">Not Helpful</span>
+                                                            <span x-show="language === 'ru'">Не полезно</span>
+                                                        </h5>
+                                                        <p class="text-sm text-red-700 dark:text-red-400">
+                                                            <span x-show="language === 'en'">The user did not find this diagnosis helpful.</span>
+                                                            <span x-show="language === 'ru'">Пользователь не нашел эту диагностику полезной.</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
                                                 {% endif %}
                                             </div>
                                             {% endif %}
@@ -268,22 +385,25 @@
                     </table>
                 </div>
                 {% else %}
-                <div class="text-center py-8">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                        <span x-show="language === 'en'">No diagnoses yet</span>
-                        <span x-show="language === 'ru'">Диагностика еще не проводилась</span>
-                    </h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        <span x-show="language === 'en'">Get started by creating a new diagnosis.</span>
-                        <span x-show="language === 'ru'">Начните с создания новой диагностики.</span>
-                    </p>
-                    <div class="mt-6">
-                        <a href="/" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-DEFAULT hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light">
-                            <span x-show="language === 'en'">New Diagnosis</span>
-                            <span x-show="language === 'ru'">Новая диагностика</span>
+                <div class="text-center py-16 px-6 bg-gray-50 dark:bg-dark-lighter rounded-xl border border-gray-100 dark:border-dark-light dark:border-opacity-20 shadow-sm">
+                    <div class="bg-white dark:bg-dark-light p-8 rounded-xl shadow-md mx-auto max-w-lg border border-gray-100 dark:border-dark-light dark:border-opacity-20">
+                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-indigo-100 dark:bg-indigo-900 dark:bg-opacity-30 mb-4">
+                            <svg class="h-10 w-10 text-primary-DEFAULT dark:text-primary-light" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-DEFAULT to-primary-light dark:from-primary-light dark:to-indigo-400 mb-2">
+                            <span x-show="language === 'en'">No Diagnostic Records Yet</span>
+                            <span x-show="language === 'ru'">Диагностика еще не проводилась</span>
+                        </h3>
+                        <p class="mb-6 text-gray-600 dark:text-gray-300 max-w-md mx-auto">
+                            <span x-show="language === 'en'">Your diagnostic history will appear here after you create your first car diagnosis.</span>
+                            <span x-show="language === 'ru'">История диагностики появится здесь после создания первой диагностики автомобиля.</span>
+                        </p>
+                        <a href="/" class="inline-flex items-center px-5 py-3 text-base font-medium rounded-lg shadow-md text-white bg-gradient-to-r from-primary-light to-primary-dark hover:from-primary-DEFAULT hover:to-primary-dark transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light dark:focus:ring-offset-dark-light">
+                            <i class="fas fa-stethoscope mr-2"></i>
+                            <span x-show="language === 'en'">Start New Diagnosis</span>
+                            <span x-show="language === 'ru'">Начать новую диагностику</span>
                         </a>
                     </div>
                 </div>

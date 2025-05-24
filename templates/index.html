@@ -6,89 +6,158 @@
     <title>Car Diagnostics Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Подключаем Google Fonts для лучшей типографики -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Montserrat', 'sans-serif'],
+                    },
                     colors: {
                         primary: {
-                            light: '#4F46E5',
-                            DEFAULT: '#4338CA',
-                            dark: '#3730A3',
+                            light: '#6366F1', // Indigo-500
+                            DEFAULT: '#4F46E5', // Indigo-600
+                            dark: '#4338CA', // Indigo-700
                         },
+                        secondary: {
+                            light: '#FB7185', // Rose-400
+                            DEFAULT: '#E11D48', // Rose-600
+                            dark: '#BE123C', // Rose-700
+                        },
+                        dark: {
+                            lighter: '#374151', // Gray-700
+                            light: '#1F2937', // Gray-800
+                            DEFAULT: '#111827', // Gray-900
+                            deep: '#030712', // Gray-950
+                        }
+                    },
+                    boxShadow: {
+                        soft: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'gradient-subtle': 'linear-gradient(to right, var(--tw-gradient-stops))',
                     }
                 }
             }
         }
     </script>
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+        }
         .drop-zone {
-            border: 2px dashed #ccc;
-            border-radius: 0.5rem;
-            transition: border-color 0.3s ease;
+            border: 2px dashed #cbd5e0;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
         }
         .drop-zone--over {
-            border-color: #4338CA;
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
         }
         .dark .drop-zone {
             border-color: #4B5563;
         }
         .dark .drop-zone--over {
             border-color: #6366F1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
         }
         [x-cloak] {
             display: none !important;
         }
+        /* Улучшенный скроллбар для темного режима */
+        .dark ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #1F2937;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #4B5563;
+            border-radius: 5px;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #6B7280;
+        }
+        /* Эффект градиента для темного фона */
+        .dark-gradient {
+            background: linear-gradient(to bottom right, #111827, #1E293B);
+        }
+        /* Эффект свечения для темного режима */
+        .dark .glow-effect {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200" 
+<body class="bg-gray-50 dark:bg-dark-deep dark:bg-gradient-to-br from-dark-deep to-dark-light transition-colors duration-200" 
       x-data="{ darkMode: localStorage.getItem('darkMode') === 'true', language: localStorage.getItem('language') || 'en' }"
       :class="{ 'dark': darkMode }">
 
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-primary-DEFAULT dark:text-white">
-                <span x-show="language === 'en'">Car Diagnostics Assistant</span>
-                <span x-show="language === 'ru'">Автодиагност</span>
+    <header class="bg-white dark:bg-dark-light dark:border-dark-lighter border-b dark:border-opacity-20 shadow-sm dark:shadow-md dark:shadow-black/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-light to-primary-dark dark:from-primary-light dark:to-indigo-400">
+                <span x-show="language === 'en'" class="flex items-center">
+                    <i class="fas fa-car-mechanic mr-2 text-primary-DEFAULT dark:text-primary-light"></i> Car Diagnostics Assistant
+                </span>
+                <span x-show="language === 'ru'" class="flex items-center">
+                    <i class="fas fa-car-mechanic mr-2 text-primary-DEFAULT dark:text-primary-light"></i> Автодиагност
+                </span>
             </h1>
             <div class="flex items-center space-x-4">
                 <!-- Language Switcher -->
                 <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="flex items-center text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
-                        <span x-show="language === 'en'">🇺🇸 English</span>
-                        <span x-show="language === 'ru'">🇷🇺 Русский</span>
+                    <button @click="open = !open" class="flex items-center px-3 py-2 rounded-md bg-gray-100 dark:bg-dark-lighter dark:hover:bg-dark-light text-gray-700 dark:text-gray-200 hover:bg-gray-200 transition-colors duration-200">
+                        <span x-show="language === 'en'" class="flex items-center">🇺🇸 <span class="ml-1.5 font-medium">EN</span></span>
+                        <span x-show="language === 'ru'" class="flex items-center">🇷🇺 <span class="ml-1.5 font-medium">RU</span></span>
                         <svg class="ml-1 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                         </svg>
                     </button>
-                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10">
-                        <a href="#" @click.prevent="language = 'en'; localStorage.setItem('language', 'en'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">🇺🇸 English</a>
-                        <a href="#" @click.prevent="language = 'ru'; localStorage.setItem('language', 'ru'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">🇷🇺 Русский</a>
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-light rounded-lg shadow-lg py-2 z-10 border dark:border-dark-lighter">
+                        <a href="#" @click.prevent="language = 'en'; localStorage.setItem('language', 'en'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-lighter">🇺🇸 English</a>
+                        <a href="#" @click.prevent="language = 'ru'; localStorage.setItem('language', 'ru'); open = false" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-lighter">🇷🇺 Русский</a>
                     </div>
                 </div>
 
                 <!-- Theme Toggle -->
-                <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <svg x-show="!darkMode" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="p-2 rounded-full bg-gray-100 dark:bg-dark-lighter hover:bg-gray-200 dark:hover:bg-dark-light transition-colors duration-200">
+                    <svg x-show="!darkMode" class="h-5 w-5 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
                     </svg>
-                    <svg x-show="darkMode" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg x-show="darkMode" class="h-5 w-5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
                     </svg>
                 </button>
 
                 <!-- Navigation -->
-                <nav class="flex space-x-4">
-                    <a href="/history" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
-                        <span x-show="language === 'en'">History</span>
-                        <span x-show="language === 'ru'">История</span>
+                <nav class="flex space-x-2">
+                    <a href="/history" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-lighter hover:text-primary-DEFAULT dark:hover:text-primary-light transition-colors duration-200">
+                        <span x-show="language === 'en'" class="flex items-center">
+                            <i class="fas fa-history mr-1.5"></i> History
+                        </span>
+                        <span x-show="language === 'ru'" class="flex items-center">
+                            <i class="fas fa-history mr-1.5"></i> История
+                        </span>
                     </a>
-                    <a href="/stats" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-DEFAULT dark:hover:text-white">
-                        <span x-show="language === 'en'">Statistics</span>
-                        <span x-show="language === 'ru'">Статистика</span>
+                    <a href="/stats" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-lighter hover:text-primary-DEFAULT dark:hover:text-primary-light transition-colors duration-200">
+                        <span x-show="language === 'en'" class="flex items-center">
+                            <i class="fas fa-chart-bar mr-1.5"></i> Statistics
+                        </span>
+                        <span x-show="language === 'ru'" class="flex items-center">
+                            <i class="fas fa-chart-bar mr-1.5"></i> Статистика
+                        </span>
                     </a>
                 </nav>
             </div>
@@ -96,56 +165,75 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
-            <div class="p-6">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                    <span x-show="language === 'en'">Diagnose Your Car Issue</span>
-                    <span x-show="language === 'ru'">Диагностика проблем автомобиля</span>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="bg-white dark:bg-dark-light dark:border dark:border-dark-lighter dark:border-opacity-20 shadow-soft dark:shadow-lg dark:shadow-black/20 overflow-hidden rounded-xl">
+            <div class="p-8">
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                    <span x-show="language === 'en'" class="relative">
+                        <i class="fas fa-tools text-primary-light mr-3"></i> Diagnose Your Car Issue
+                        <span class="absolute -bottom-2 left-8 right-0 h-1 bg-gradient-to-r from-primary-light to-primary-dark rounded opacity-70"></span>
+                    </span>
+                    <span x-show="language === 'ru'" class="relative">
+                        <i class="fas fa-tools text-primary-light mr-3"></i> Диагностика проблем автомобиля
+                        <span class="absolute -bottom-2 left-8 right-0 h-1 bg-gradient-to-r from-primary-light to-primary-dark rounded opacity-70"></span>
+                    </span>
                 </h2>
 
                 <!-- Form -->
-                <form id="diagnosticForm" action="/" method="post" enctype="multipart/form-data" class="space-y-6">
+                <form id="diagnosticForm" action="/" method="post" enctype="multipart/form-data" class="space-y-8">
                     <!-- Description Field -->
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <div class="bg-gray-50 dark:bg-dark-DEFAULT p-6 rounded-lg border border-gray-100 dark:border-dark-lighter dark:border-opacity-20 shadow-sm">
+                        <label for="description" class="block text-base font-medium text-gray-700 dark:text-gray-200 flex items-center mb-2">
+                            <i class="fas fa-comment-alt text-primary-DEFAULT dark:text-primary-light mr-2"></i>
                             <span x-show="language === 'en'">Describe the problem</span>
                             <span x-show="language === 'ru'">Опишите проблему</span>
                         </label>
                         <textarea id="description" name="description" rows="4" 
-                                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-DEFAULT focus:ring-primary-DEFAULT dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                  placeholder="" x-bind:placeholder="language === 'en' ? 'E.g., My car makes a squealing noise when braking...' : 'Например, мой автомобиль издает визг при торможении...'"></textarea>
+                                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-DEFAULT focus:ring-primary-DEFAULT dark:bg-dark-DEFAULT dark:border-dark-lighter dark:text-gray-100 transition-colors duration-200"
+                                  placeholder="" x-bind:placeholder="language === 'en' ? 'E.g., My car makes a squealing noise when braking...' : 'Например, мой автомобиль издает визг при торможении...'}"></textarea>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span x-show="language === 'en'">Provide a detailed description of the issue for more accurate diagnosis</span>
+                            <span x-show="language === 'ru'">Предоставьте подробное описание проблемы для более точной диагностики</span>
+                        </p>
                     </div>
 
                     <!-- File Upload -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <div class="bg-gray-50 dark:bg-dark-DEFAULT p-6 rounded-lg border border-gray-100 dark:border-dark-lighter dark:border-opacity-20 shadow-sm">
+                        <label class="block text-base font-medium text-gray-700 dark:text-gray-200 flex items-center mb-3">
+                            <i class="fas fa-camera text-primary-DEFAULT dark:text-primary-light mr-2"></i>
                             <span x-show="language === 'en'">Upload photos or audio</span>
                             <span x-show="language === 'ru'">Загрузите фото или аудио</span>
                         </label>
-                        <div id="drop-zone" class="drop-zone flex flex-col items-center justify-center p-8 cursor-pointer">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <div class="mt-4 text-center">
-                                <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    <span x-show="language === 'en'">Drag and drop files here, or click to select files</span>
-                                    <span x-show="language === 'ru'">Перетащите файлы сюда или нажмите для выбора</span>
+                        <div id="drop-zone" class="drop-zone flex flex-col items-center justify-center p-8 cursor-pointer bg-white dark:bg-dark-lighter rounded-lg hover:bg-gray-50 dark:hover:bg-dark-light transition-colors duration-200">
+                            <div class="bg-primary-light/10 dark:bg-primary-light/20 rounded-full p-4 mb-3">
+                                <svg class="h-10 w-10 text-primary-DEFAULT dark:text-primary-light" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-base font-medium text-gray-700 dark:text-gray-200">
+                                    <span x-show="language === 'en'">Drag and drop files here</span>
+                                    <span x-show="language === 'ru'">Перетащите файлы сюда</span>
                                 </p>
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-500">
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    <span x-show="language === 'en'">or click to browse files</span>
+                                    <span x-show="language === 'ru'">или нажмите для выбора файлов</span>
+                                </p>
+                                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                     <span x-show="language === 'en'">Supported formats: {{ allowed_image_extensions }} for images, {{ allowed_audio_extensions }} for audio</span>
                                     <span x-show="language === 'ru'">Поддерживаемые форматы: {{ allowed_image_extensions }} для изображений, {{ allowed_audio_extensions }} для аудио</span>
                                 </p>
                             </div>
                             <input type="file" id="fileInput" name="files" multiple class="hidden" accept=".jpg,.jpeg,.png,.mp3,.wav">
                         </div>
-                        <div id="filePreview" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                        <div id="filePreview" class="mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
                     </div>
 
                     <!-- Submit Button -->
-                    <div>
-                        <button type="submit" class="w-full inline-flex justify-center py-3 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-DEFAULT hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light">
-                            <span x-show="language === 'en'">Diagnose</span>
+                    <div class="pt-2">
+                        <button type="submit" class="w-full inline-flex justify-center items-center py-4 px-6 border border-transparent shadow-md text-base font-medium rounded-lg text-white bg-gradient-to-r from-primary-DEFAULT to-primary-dark hover:from-primary-dark hover:to-primary-DEFAULT focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-light transition-all duration-200 dark:shadow-primary-DEFAULT/20 dark:glow-effect">
+                            <i class="fas fa-search mr-2"></i>
+                            <span x-show="language === 'en'">Diagnose My Car</span>
                             <span x-show="language === 'ru'">Диагностировать</span>
                         </button>
                     </div>
@@ -153,15 +241,19 @@
 
                 <!-- Error Message -->
                 {% if error_message %}
-                <div class="mt-6 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md p-4">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <div class="mt-8 bg-gradient-to-r from-red-50 to-red-50/70 dark:from-red-900/40 dark:to-red-800/30 border-l-4 border-red-500 dark:border-red-600 rounded-lg p-5 shadow-sm dark:shadow-red-900/10">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 bg-red-100 dark:bg-red-800/50 rounded-full p-2">
+                            <svg class="h-6 w-6 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
                             </svg>
                         </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-red-800 dark:text-red-200">{{ error_message }}</p>
+                        <div class="ml-4">
+                            <h3 class="font-medium text-red-800 dark:text-red-300">
+                                <span x-show="language === 'en'">Error</span>
+                                <span x-show="language === 'ru'">Ошибка</span>
+                            </h3>
+                            <p class="mt-1 text-sm text-red-700 dark:text-red-200">{{ error_message }}</p>
                         </div>
                     </div>
                 </div>
@@ -169,53 +261,71 @@
 
                 <!-- Results -->
                 {% if diagnosis_result %}
-                <div id="results" class="mt-8 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                    <div class="bg-gray-50 dark:bg-gray-900 px-4 py-5 sm:px-6">
-                        <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">
+                <div id="results" class="mt-10 bg-white dark:bg-dark-light border border-gray-100 dark:border-dark-lighter dark:border-opacity-20 rounded-xl overflow-hidden shadow-md dark:shadow-lg dark:shadow-primary-dark/5">
+                    <div class="bg-gradient-to-r from-primary-light/10 to-transparent dark:from-primary-light/20 dark:to-transparent px-6 py-5">
+                        <h3 class="text-xl font-semibold leading-6 text-gray-900 dark:text-white flex items-center">
+                            <i class="fas fa-clipboard-check text-primary-DEFAULT dark:text-primary-light mr-3"></i>
                             <span x-show="language === 'en'">Diagnosis Results</span>
                             <span x-show="language === 'ru'">Результаты диагностики</span>
                         </h3>
                         {% if diagnosis_result.transcription %}
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                            <span x-show="language === 'en'">Audio transcription: "{{ diagnosis_result.transcription }}"</span>
-                            <span x-show="language === 'ru'">Транскрипция аудио: "{{ diagnosis_result.transcription }}"</span>
-                        </p>
+                        <div class="mt-3 flex items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-microphone text-gray-500 dark:text-gray-400 mt-0.5"></i>
+                            </div>
+                            <p class="ml-2 text-sm text-gray-600 dark:text-gray-300">
+                                <span x-show="language === 'en'" class="font-medium text-gray-700 dark:text-gray-200">Audio transcription:</span>
+                                <span x-show="language === 'ru'" class="font-medium text-gray-700 dark:text-gray-200">Транскрипция аудио:</span>
+                                <span class="italic">"{{ diagnosis_result.transcription }}"</span>
+                            </p>
+                        </div>
                         {% endif %}
                     </div>
                     
-                    <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:px-6">
-                        <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
-                            <div class="sm:col-span-2">
-                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <div class="border-t border-gray-100 dark:border-dark-lighter dark:border-opacity-20 px-6 py-6">
+                        <dl class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+                            <div class="sm:col-span-2 bg-gray-50 dark:bg-dark-DEFAULT p-5 rounded-lg">
+                                <dt class="text-base font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                                    <i class="fas fa-exclamation-triangle text-amber-500 mr-2"></i>
                                     <span x-show="language === 'en'">Malfunction</span>
                                     <span x-show="language === 'ru'">Неисправность</span>
                                 </dt>
-                                <dd class="mt-1 text-md text-gray-900 dark:text-white">{{ diagnosis_result.diagnosis.malfunction }}</dd>
+                                <dd class="mt-2 text-lg font-medium text-gray-900 dark:text-white">{{ diagnosis_result.diagnosis.malfunction }}</dd>
                             </div>
                             
-                            <div class="sm:col-span-2">
-                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            <div class="sm:col-span-2 bg-gray-50 dark:bg-dark-DEFAULT p-5 rounded-lg">
+                                <dt class="text-base font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                                    <i class="fas fa-tools text-primary-DEFAULT dark:text-primary-light mr-2"></i>
                                     <span x-show="language === 'en'">Recommended Actions</span>
                                     <span x-show="language === 'ru'">Рекомендуемые действия</span>
                                 </dt>
-                                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                    <ul class="list-disc pl-5 space-y-1">
+                                <dd class="mt-2 text-gray-800 dark:text-gray-100">
+                                    <ul class="space-y-2">
                                         {% for action in diagnosis_result.diagnosis.recommended_actions %}
-                                        <li>{{ action }}</li>
+                                        <li class="flex items-start">
+                                            <span class="flex-shrink-0 h-5 w-5 rounded-full bg-primary-light/20 dark:bg-primary-light/30 flex items-center justify-center mr-2">
+                                                <span class="text-primary-DEFAULT dark:text-primary-light text-xs font-bold">{{ loop.index }}</span>
+                                            </span>
+                                            <span>{{ action }}</span>
+                                        </li>
                                         {% endfor %}
                                     </ul>
                                 </dd>
                             </div>
                             
-                            <div class="sm:col-span-2">
-                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            <div class="sm:col-span-2 bg-gray-50 dark:bg-dark-DEFAULT p-5 rounded-lg">
+                                <dt class="text-base font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                                    <i class="fas fa-search text-blue-500 dark:text-blue-400 mr-2"></i>
                                     <span x-show="language === 'en'">Possible Causes</span>
                                     <span x-show="language === 'ru'">Возможные причины</span>
                                 </dt>
-                                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                    <ul class="list-disc pl-5 space-y-1">
+                                <dd class="mt-2 text-gray-800 dark:text-gray-100">
+                                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4">
                                         {% for cause in diagnosis_result.diagnosis.possible_causes %}
-                                        <li>{{ cause }}</li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-circle text-xs text-blue-500 dark:text-blue-400 mr-2"></i>
+                                            <span>{{ cause }}</span>
+                                        </li>
                                         {% endfor %}
                                     </ul>
                                 </dd>
@@ -223,22 +333,29 @@
                         </dl>
                     </div>
                     
-                    <!-- Feedback buttons -->
-                    <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-4 sm:px-6 flex justify-center space-x-4">
-                        <span class="text-sm text-gray-500 dark:text-gray-400 mr-2">
-                            <span x-show="language === 'en'">Was this helpful?</span>
-                            <span x-show="language === 'ru'">Это помогло?</span>
-                        </span>
-                        <button type="button" onclick="provideFeedback('{{ diagnosis_result.record_id }}', true)" 
-                                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                            <span x-show="language === 'en'">Yes</span>
-                            <span x-show="language === 'ru'">Да</span>
-                        </button>
-                        <button type="button" onclick="provideFeedback('{{ diagnosis_result.record_id }}', false)" 
-                                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                            <span x-show="language === 'en'">No</span>
-                            <span x-show="language === 'ru'">Нет</span>
-                        </button>
+                    <div class="border-t border-gray-100 dark:border-dark-lighter dark:border-opacity-20 px-6 py-5 bg-gray-50 dark:bg-dark-DEFAULT flex justify-center items-center">
+                        <div class="text-center">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-3">
+                                <span x-show="language === 'en'">Was this diagnosis helpful?</span>
+                                <span x-show="language === 'ru'">Была ли полезна эта диагностика?</span>
+                            </span>
+                            <div class="flex space-x-4 justify-center">
+                                <button 
+                                    onclick="provideFeedback('{{ diagnosis_result.record_id }}', true)" 
+                                    class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-md hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-150 flex items-center">
+                                    <i class="fas fa-thumbs-up mr-2"></i>
+                                    <span x-show="language === 'en'">Yes, Helpful</span>
+                                    <span x-show="language === 'ru'">Да, помогла</span>
+                                </button>
+                                <button 
+                                    onclick="provideFeedback('{{ diagnosis_result.record_id }}', false)" 
+                                    class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-150 flex items-center">
+                                    <i class="fas fa-thumbs-down mr-2"></i>
+                                    <span x-show="language === 'en'">No, Not Helpful</span>
+                                    <span x-show="language === 'ru'">Нет, не помогла</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 {% endif %}
@@ -247,12 +364,48 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white dark:bg-gray-800 shadow mt-8">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-            <p class="text-center text-gray-500 dark:text-gray-400 text-sm">
-                <span x-show="language === 'en'">© 2025 Car Diagnostics Assistant. All rights reserved.</span>
-                <span x-show="language === 'ru'">© 2025 Автодиагност. Все права защищены.</span>
-            </p>
+    <footer class="bg-white dark:bg-dark-light border-t border-gray-100 dark:border-dark-lighter dark:border-opacity-20 shadow-inner dark:shadow-dark-deeper/10 mt-12">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="text-primary-DEFAULT dark:text-primary-light mr-3">
+                        <i class="fas fa-car-mechanic text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-DEFAULT to-primary-dark dark:from-primary-light dark:to-indigo-400">
+                        <span x-show="language === 'en'">Car Diagnostics</span>
+                        <span x-show="language === 'ru'">Автодиагност</span>
+                    </h3>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-primary-DEFAULT dark:text-gray-400 dark:hover:text-primary-light transition-colors duration-200">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-primary-DEFAULT dark:text-gray-400 dark:hover:text-primary-light transition-colors duration-200">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-500 hover:text-primary-DEFAULT dark:text-gray-400 dark:hover:text-primary-light transition-colors duration-200">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-100 dark:border-dark-lighter dark:border-opacity-20 mt-6 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 md:mb-0">
+                    <span x-show="language === 'en'">&copy; 2025 Car Diagnostics Assistant. All rights reserved.</span>
+                    <span x-show="language === 'ru'">&copy; 2025 Автодиагност. Все права защищены.</span>
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-sm text-gray-500 hover:text-primary-DEFAULT dark:text-gray-400 dark:hover:text-primary-light transition-colors duration-200">
+                        <span x-show="language === 'en'">Privacy Policy</span>
+                        <span x-show="language === 'ru'">Политика конфиденциальности</span>
+                    </a>
+                    <a href="#" class="text-sm text-gray-500 hover:text-primary-DEFAULT dark:text-gray-400 dark:hover:text-primary-light transition-colors duration-200">
+                        <span x-show="language === 'en'">Terms of Service</span>
+                        <span x-show="language === 'ru'">Условия обслуживания</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </footer>
 
