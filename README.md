@@ -33,8 +33,10 @@ The Car Diagnostics Assistant is an intelligent web application that helps users
 
 https://dayio.onrender.com
 
+### Presentation
 
-## Project Structure
+https://docs.google.com/presentation/d/1V_H7VSw9B5-2uTvw6xNMgujWsIy5wFk3LdujPQ8GWuI/edit?usp=sharing
+### Project Structure
 - `main.py`: Main Flask application
 - `llm_client.py`: Groq API integration
 - `history.py`: History management module
