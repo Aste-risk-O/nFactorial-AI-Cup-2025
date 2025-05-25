@@ -29,7 +29,7 @@ The Car Diagnostics Assistant is an intelligent web application that helps users
 - Python 3.8 or higher
 - Groq API key
 
-### Installation
+### Deployment
 
 https://dayio.onrender.com
 
